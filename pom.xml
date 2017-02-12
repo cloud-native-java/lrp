@@ -12,19 +12,15 @@
         <version>1.0.0-SNAPSHOT</version>
         <relativePath/>
     </parent>
-
     <modules>
-
         <module>activiti</module>
         <module>activiti-integration</module>
         <module>batch</module>
-
         <module>remote-partitioning</module>
-         <module>task</module>
+        <module>task</module>
         <module>lrp-it</module>
     </modules>
     <build>
-
         <plugins>
             <plugin>
                 <groupId>org.jfrog.buildinfo</groupId>

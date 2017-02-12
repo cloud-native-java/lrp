@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cnj</groupId>
-        <artifactId>integration</artifactId>
+        <artifactId>lrp</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>remote-partitioning</artifactId>
-    <name>integration/remote-partitioning</name>
+    <name>lrp/remote-partitioning</name>
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>

@@ -8,10 +8,10 @@
     </properties>
     <parent>
         <groupId>cnj</groupId>
-        <artifactId>integration</artifactId>
+        <artifactId>lrp</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <name>integration/activiti</name>
+    <name>lrp/activiti</name>
     <artifactId>activiti</artifactId>
     <dependencies>
         <dependency>
