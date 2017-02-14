@@ -16,6 +16,10 @@ import org.springframework.context.annotation.Profile;
 @EnableAutoConfiguration
 public class DemoApplication {
 
+	public static void main(String[] args) {
+		SpringApplication.run(DemoApplication.class, args);
+	}
+
 	@Configuration
 	@Profile(Profiles.LEADER)
 	@EnableBinding(LeaderChannels.class)
@@ -48,11 +52,4 @@ public class DemoApplication {
 	@EnableBinding(WorkerChannels.class)
 	public static class Worker {
 	}
-
-
-	public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
-	}
 }
-
-

@@ -32,23 +32,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
-@SpringBootTest(classes = DemoApplication.class,
-		webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@SpringBootTest(classes = DemoApplication.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 public class SignupRestControllerTests {
 
 	private static final AtomicInteger counter = new AtomicInteger();
-
+	private static Log log = LogFactory.getLog(SignupRestController.class);
 	private String validEmail = "dsyer@email.com";
 	private String invalidEmail = "pwebb";
-
 	@MockBean
 	private EmailValidationService emailValidationService;
-
 	@Autowired
 	private MockMvc mockMvc;
-
 	@Autowired
 	private ObjectMapper objectMapper;
+	@Autowired
+	private CustomerRepository repository;
 
 	@Before
 	public void before() throws Exception {
@@ -58,11 +56,6 @@ public class SignupRestControllerTests {
 		given(this.emailValidationService.isEmailValid(invalidEmail)).willReturn(false);
 		given(this.emailValidationService.isEmailValid(validEmail)).willReturn(true);
 	}
-
-	@Autowired
-	private CustomerRepository repository;
-
-	private static Log log = LogFactory.getLog(SignupRestController.class);
 
 	protected void doTestSignup(Customer input) throws Exception {
 
@@ -74,36 +67,29 @@ public class SignupRestControllerTests {
 
 		// start signup
 		this.mockMvc
-				.perform(
-						post(rootUrl).content(inputJson).contentType(
-								MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(
-						mvcResult -> {
-							String contentAsString = mvcResult.getResponse()
-									.getContentAsString();
-							Long customerId = Long.parseLong(contentAsString);
-							assertNotNull(customerId);
-							assertTrue(customerId > 0);
-						});
+				.perform(post(rootUrl).content(inputJson).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(mvcResult -> {
+					String contentAsString = mvcResult.getResponse().getContentAsString();
+					Long customerId = Long.parseLong(contentAsString);
+					assertNotNull(customerId);
+					assertTrue(customerId > 0);
+				});
 
 		Customer customer = this.repository.findByEmail(email).orElseThrow(
-				() -> new AssertionError(
-						"no record stored in the database for email '" + email
-								+ "'"));
+				() -> new AssertionError("no record stored in the database for email '" + email
+						+ "'"));
 
 		String customerId = Long.toString(customer.getId());
 
 		// see if there are any errors to be corrected
 		String contentAsString = this.mockMvc
 				.perform(get(rootUrl + "/" + customerId + "/signup/errors"))
-				.andExpect(status().isOk()).andReturn().getResponse()
-				.getContentAsString();
+				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 		ObjectMapper mapper = new ObjectMapper();
 		TypeReference<List<Long>> typeReference = new TypeReference<List<Long>>() {
 		};
-		List<Long> errantSignupFixTaskIds = mapper.readerFor(typeReference)
-				.readValue(contentAsString);
+		List<Long> errantSignupFixTaskIds = mapper.readerFor(typeReference).readValue(
+				contentAsString);
 		log.info("errant signups:  " + errantSignupFixTaskIds.toString());
 
 		// if necessary, fix them
@@ -111,19 +97,18 @@ public class SignupRestControllerTests {
 			try {
 				customer.setEmail("valid@email.com");
 				this.mockMvc.perform(
-						post(rootUrl + "/" + customerId + "/signup/errors/" + taskId)
-								.content(jsonForCustomer(customer))
-								.contentType(MediaType.APPLICATION_JSON))
+						post(rootUrl + "/" + customerId + "/signup/errors/" + taskId).content(
+								jsonForCustomer(customer)).contentType(MediaType.APPLICATION_JSON))
 						.andExpect(status().isOk());
 
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		});
 
 		// confirm receipt of email
-		this.mockMvc.perform(
-				post(rootUrl + "/" + customerId + "/signup/confirmation"))
+		this.mockMvc.perform(post(rootUrl + "/" + customerId + "/signup/confirmation"))
 				.andExpect(status().isOk());
 	}
 
@@ -143,6 +128,10 @@ public class SignupRestControllerTests {
 		int i = counter.get();
 		assertEquals(i, 2);
 		log.info("signupFlowSadPath: " + i);
+	}
+
+	private String jsonForCustomer(Customer customer) throws Exception {
+		return this.objectMapper.writerFor(Customer.class).writeValueAsString(customer);
 	}
 
 	@Component
@@ -175,10 +164,5 @@ public class SignupRestControllerTests {
 			pfb.setTarget(cf);
 			return pfb.getObject();
 		}
-	}
-
-	private String jsonForCustomer(Customer customer) throws Exception {
-		return this.objectMapper.writerFor(Customer.class).writeValueAsString(
-				customer);
 	}
 }

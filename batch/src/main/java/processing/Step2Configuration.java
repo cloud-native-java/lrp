@@ -19,20 +19,16 @@ import javax.sql.DataSource;
 class Step2Configuration {
 
 	@Bean
-	@StepScope // <1>
+	@StepScope
+	// <1>
 	FlatFileItemReader<Person> fileReader(
 			@Value("file://#{jobParameters['input']}") Resource in) // <2>
 			throws Exception {
 
 		// <3>
-		return new FlatFileItemReaderBuilder<Person>()
-				.name("file-reader")
-				.resource(in)
-				.targetType(Person.class)
-				.delimited()
-				.delimiter(",")
-				.names(new String[]{"firstName", "age", "email"})
-				.build();
+		return new FlatFileItemReaderBuilder<Person>().name("file-reader").resource(in)
+				.targetType(Person.class).delimited().delimiter(",")
+				.names(new String[] { "firstName", "age", "email" }).build();
 	}
 
 	@Bean
@@ -51,9 +47,8 @@ class Step2Configuration {
 	JdbcBatchItemWriter<Person> jdbcWriter(DataSource ds) { // <5>
 		return new JdbcBatchItemWriterBuilder<Person>()
 				.dataSource(ds)
-				.sql("insert into PEOPLE( AGE, FIRST_NAME, EMAIL)" +
-						" values (:age, :firstName, :email)")
-				.beanMapped()
-				.build();
+				.sql(
+						"insert into PEOPLE( AGE, FIRST_NAME, EMAIL)"
+								+ " values (:age, :firstName, :email)").beanMapped().build();
 	}
 }

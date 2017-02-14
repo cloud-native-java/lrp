@@ -1,6 +1,5 @@
 package processing;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.step.tasklet.Tasklet;

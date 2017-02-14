@@ -22,36 +22,30 @@ class Step3Configuration {
 	@Bean
 	JdbcCursorItemReader<Map<Integer, Integer>> jdbcReader(DataSource dataSource) {
 		return new JdbcCursorItemReaderBuilder<Map<Integer, Integer>>()
-				.dataSource(dataSource)
-				.name("jdbc-reader")
+				.dataSource(dataSource).name("jdbc-reader")
 				.sql("select COUNT(age) c, age a from PEOPLE group by age")
-				.rowMapper((rs, i) -> Collections.singletonMap(
-						rs.getInt("a"), rs.getInt("c")))
+				.rowMapper((rs, i) -> Collections.singletonMap(rs.getInt("a"), rs.getInt("c")))
 				.build();
 	}
 
-	//<2>
+	// <2>
 	@Bean
 	@StepScope
 	FlatFileItemWriter<Map<Integer, Integer>> fileWriter(
 			@Value("file://#{jobParameters['output']}") Resource out) {
 
-		DelimitedLineAggregator<Map<Integer, Integer>> aggregator =
-				new DelimitedLineAggregator<Map<Integer, Integer>>() {
-					{
-						// <3>
-						setDelimiter(",");
-						setFieldExtractor(ageAndCount -> {
-							Map.Entry<Integer, Integer> next = ageAndCount.entrySet().iterator().next();
-							return new Object[]{next.getKey(), next.getValue()};
-						});
-					}
-				};
+		DelimitedLineAggregator<Map<Integer, Integer>> aggregator = new DelimitedLineAggregator<Map<Integer, Integer>>() {
+			{
+				// <3>
+				setDelimiter(",");
+				setFieldExtractor(ageAndCount -> {
+					Map.Entry<Integer, Integer> next = ageAndCount.entrySet().iterator().next();
+					return new Object[] { next.getKey(), next.getValue() };
+				});
+			}
+		};
 
-		return new FlatFileItemWriterBuilder<Map<Integer, Integer>>()
-				.name("file-writer")
-				.resource(out)
-				.lineAggregator(aggregator)
-				.build();
+		return new FlatFileItemWriterBuilder<Map<Integer, Integer>>().name("file-writer")
+				.resource(out).lineAggregator(aggregator).build();
 	}
 }

@@ -12,11 +12,16 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.stream.Stream;
 
-@EnableTask // <1>
+@EnableTask
+// <1>
 @SpringBootApplication
 public class HelloTask {
 
 	private Log log = LogFactory.getLog(getClass());
+
+	public static void main(String args[]) {
+		SpringApplication.run(HelloTask.class, args);
+	}
 
 	@Bean
 	CommandLineRunner runAndExplore(TaskExplorer taskExplorer) {
@@ -24,12 +29,8 @@ public class HelloTask {
 			Stream.of(args).forEach(log::info);
 
 			// <2>
-			taskExplorer.findAll(new PageRequest(0, 1))
-					.forEach(taskExecution -> log.info(taskExecution.toString()));
+			taskExplorer.findAll(new PageRequest(0, 1)).forEach(
+					taskExecution -> log.info(taskExecution.toString()));
 		};
-	}
-
-	public static void main(String args[]) {
-		SpringApplication.run(HelloTask.class, args);
 	}
 }

@@ -19,6 +19,10 @@ import java.io.File;
 @SpringBootApplication
 public class BatchApplication {
 
+	public static void main(String[] args) {
+		SpringApplication.run(BatchApplication.class, args);
+	}
+
 	@Bean
 	RestTemplate restTemplate() {
 		return new RestTemplate();
@@ -31,20 +35,11 @@ public class BatchApplication {
 
 	// <1>
 	@Bean
-	CommandLineRunner run(
-			JobLauncher launcher,
-			Job job,
-			@Value("${user.home}") String home) {
-		return args ->
-				launcher.run(job,
-						new JobParametersBuilder()
-								.addString("input", path(home, "in.csv"))
-								.addString("output", path(home, "out.csv"))
-								.toJobParameters());
-	}
-
-	public static void main(String[] args) {
-		SpringApplication.run(BatchApplication.class, args);
+	CommandLineRunner run(JobLauncher launcher, Job job, @Value("${user.home}") String home) {
+		return args -> launcher.run(
+				job,
+				new JobParametersBuilder().addString("input", path(home, "in.csv"))
+						.addString("output", path(home, "out.csv")).toJobParameters());
 	}
 
 	private String path(String home, String fileName) {

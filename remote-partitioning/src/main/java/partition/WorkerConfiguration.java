@@ -14,7 +14,8 @@ import org.springframework.integration.dsl.support.GenericHandler;
 import org.springframework.messaging.MessageChannel;
 
 @Configuration
-@Profile(Profiles.WORKER_PROFILE)  // <1>
+@Profile(Profiles.WORKER_PROFILE)
+// <1>
 class WorkerConfiguration {
 
 	// <2>
@@ -25,8 +26,8 @@ class WorkerConfiguration {
 
 	// <3>
 	@Bean
-	StepExecutionRequestHandler stepExecutionRequestHandler(
-			JobExplorer explorer, StepLocator stepLocator) {
+	StepExecutionRequestHandler stepExecutionRequestHandler(JobExplorer explorer,
+			StepLocator stepLocator) {
 		StepExecutionRequestHandler handler = new StepExecutionRequestHandler();
 		handler.setStepLocator(stepLocator);
 		handler.setJobExplorer(explorer);
@@ -35,17 +36,15 @@ class WorkerConfiguration {
 
 	// <4>
 	@Bean
-	IntegrationFlow stepExecutionRequestHandlerFlow(
-			WorkerChannels channels,
+	IntegrationFlow stepExecutionRequestHandlerFlow(WorkerChannels channels,
 			StepExecutionRequestHandler handler) {
 
 		MessageChannel channel = channels.workerRequestsChannels();
-		GenericHandler<StepExecutionRequest> executionHandler =
-				(payload, headers) -> handler.handle(payload);
+		GenericHandler<StepExecutionRequest> executionHandler = (payload, headers) -> handler
+				.handle(payload);
 
 		return IntegrationFlows.from(channel)
 				.handle(StepExecutionRequest.class, executionHandler)
-				.channel(channels.workerRepliesChannels())
-				.get();
+				.channel(channels.workerRepliesChannels()).get();
 	}
 }

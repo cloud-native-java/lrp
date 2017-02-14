@@ -25,6 +25,6 @@ class ProcessRestController {
 	Map<String, String> launch() {
 		ProcessInstance pi = this.processEngine.getRuntimeService()
 				.startProcessInstanceByKey("asyncProcess");
-		return Collections.singletonMap("processInstanceId", pi .getProcessInstanceId());
+		return Collections.singletonMap("processInstanceId", pi.getProcessInstanceId());
 	}
 }

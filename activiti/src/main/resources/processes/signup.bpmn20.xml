@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions
-        xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:activiti="http://activiti.org/bpmn"
+        xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
         typeLanguage="http://www.w3.org/2001/XMLSchema"
         expressionLanguage="http://www.w3.org/1999/XPath"
         targetNamespace="http://www.activiti.org/bpmn2.0">
@@ -16,19 +16,24 @@
         <sequenceFlow sourceRef="start" targetRef="check-form"/>
 
         <!--3-->
-        <serviceTask id="check-form" name="check-form" activiti:expression="#{checkForm.execute(execution)}"/>
+        <serviceTask id="check-form" name="check-form"
+                     activiti:expression="#{checkForm.execute(execution)}"/>
 
         <sequenceFlow sourceRef="check-form" targetRef="form-completed-decision-gateway"/>
 
         <!--4-->
         <exclusiveGateway id="form-completed-decision-gateway"/>
 
-        <sequenceFlow name="formOK" id="formOK" sourceRef="form-completed-decision-gateway" targetRef="send-confirmation-email">
-            <conditionExpression xsi:type="tFormalExpression">${formOK == true}</conditionExpression>
+        <sequenceFlow name="formOK" id="formOK" sourceRef="form-completed-decision-gateway"
+                      targetRef="send-confirmation-email">
+            <conditionExpression xsi:type="tFormalExpression">${formOK == true}
+            </conditionExpression>
         </sequenceFlow>
 
-        <sequenceFlow  id="formNotOK" name="formNotOK" sourceRef="form-completed-decision-gateway" targetRef="fix-errors">
-            <conditionExpression  xsi:type="tFormalExpression">${formOK == false}</conditionExpression>
+        <sequenceFlow id="formNotOK" name="formNotOK" sourceRef="form-completed-decision-gateway"
+                      targetRef="fix-errors">
+            <conditionExpression xsi:type="tFormalExpression">${formOK == false}
+            </conditionExpression>
         </sequenceFlow>
 
         <!--5-->
@@ -43,7 +48,8 @@
         <sequenceFlow sourceRef="fix-errors" targetRef="check-form"/>
 
         <!--6-->
-        <serviceTask id="send-confirmation-email" name="send-confirmation-email" activiti:expression="#{sendConfirmationEmail.execute(execution)}"/>
+        <serviceTask id="send-confirmation-email" name="send-confirmation-email"
+                     activiti:expression="#{sendConfirmationEmail.execute(execution)}"/>
 
         <sequenceFlow sourceRef="send-confirmation-email" targetRef="confirm-email"/>
 

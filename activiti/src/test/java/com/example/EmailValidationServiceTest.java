@@ -17,8 +17,7 @@ public class EmailValidationServiceTest {
 
 	@Test
 	public void testEmailValidation() throws Exception {
-		Assert.assertTrue(this.emailValidationService
-				.isEmailValid("george@email.com"));
+		Assert.assertTrue(this.emailValidationService.isEmailValid("george@email.com"));
 		Assert.assertFalse(this.emailValidationService.isEmailValid("george"));
 	}
 }

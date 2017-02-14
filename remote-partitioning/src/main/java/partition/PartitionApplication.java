@@ -12,7 +12,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 import java.util.concurrent.TimeUnit;
 
-@EnableBatchProcessing // <1>
+@EnableBatchProcessing
+// <1>
 @IntegrationComponentScan
 @SpringBootApplication
 public class PartitionApplication {

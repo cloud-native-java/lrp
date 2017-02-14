@@ -20,10 +20,10 @@ class IdRangePartitioner implements Partitioner {
 	@Override
 	public Map<String, ExecutionContext> partition(int gridSize) {
 		Map<String, ExecutionContext> result = new HashMap<>();
-		int min = jdbcTemplate.queryForObject("SELECT MIN(" + column
-				+ ") from " + table, Integer.class);
-		int max = jdbcTemplate.queryForObject("SELECT MAX(" + column
-				+ ") from " + table, Integer.class);
+		int min = jdbcTemplate.queryForObject("SELECT MIN(" + column + ") from " + table,
+				Integer.class);
+		int max = jdbcTemplate.queryForObject("SELECT MAX(" + column + ") from " + table,
+				Integer.class);
 		int targetSize = (max - min) / gridSize + 1;
 		int number = 0;
 		int start = min;

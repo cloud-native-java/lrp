@@ -16,15 +16,9 @@ public class Customer {
 	Customer() {
 	}
 
-	public void setFirstName(String firstName) {
+	public Customer(String firstName, String lastName, String email) {
 		this.firstName = firstName;
-	}
-
-	public void setLastName(String lastName) {
 		this.lastName = lastName;
-	}
-
-	public void setEmail(String email) {
 		this.email = email;
 	}
 
@@ -37,17 +31,23 @@ public class Customer {
 		return firstName;
 	}
 
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
 	public String getLastName() {
 		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public String getEmail() {
 		return email;
 	}
 
-	public Customer(String firstName, String lastName, String email) {
-		this.firstName = firstName;
-		this.lastName = lastName;
+	public void setEmail(String email) {
 		this.email = email;
 	}
 }

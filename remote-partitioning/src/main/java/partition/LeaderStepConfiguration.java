@@ -19,36 +19,27 @@ class LeaderStepConfiguration {
 
 	// <1>
 	@Bean
-	Step stagingStep(StepBuilderFactory sbf,
-	                 JdbcTemplate jdbc) {
-		return sbf
-			.get("staging")
-			.tasklet((contribution, chunkContext) -> {
-				jdbc.execute("truncate NEW_PEOPLE");
-				return RepeatStatus.FINISHED;
-			})
-			.build();
+	Step stagingStep(StepBuilderFactory sbf, JdbcTemplate jdbc) {
+		return sbf.get("staging").tasklet((contribution, chunkContext) -> {
+			jdbc.execute("truncate NEW_PEOPLE");
+			return RepeatStatus.FINISHED;
+		}).build();
 	}
 
 	// <2>
 	@Bean
-	Step partitionStep(StepBuilderFactory sbf,
-	                   Partitioner p,
-	                   PartitionHandler ph,
-	                   WorkerStepConfiguration wsc) {
+	Step partitionStep(StepBuilderFactory sbf, Partitioner p, PartitionHandler ph,
+			WorkerStepConfiguration wsc) {
 		Step workerStep = wsc.workerStep(null);
-		return sbf.get("partitionStep")
-				.partitioner(workerStep.getName(), p)
-				.partitionHandler(ph)
-				.build();
+		return sbf.get("partitionStep").partitioner(workerStep.getName(), p)
+				.partitionHandler(ph).build();
 	}
 
 	// <3>
 	@Bean
 	MessageChannelPartitionHandler partitionHandler(
 			@Value("${partition.grid-size:4}") int gridSize,
-			MessagingTemplate messagingTemplate,
-			JobExplorer jobExplorer) {
+			MessagingTemplate messagingTemplate, JobExplorer jobExplorer) {
 		MessageChannelPartitionHandler partitionHandler = new MessageChannelPartitionHandler();
 		partitionHandler.setMessagingOperations(messagingTemplate);
 		partitionHandler.setJobExplorer(jobExplorer);
@@ -66,8 +57,8 @@ class LeaderStepConfiguration {
 	// <5>
 	@Bean
 	Partitioner partitioner(JdbcOperations jdbcTemplate,
-	                        @Value("${partition.table:PEOPLE}") String table,
-	                        @Value("${partition.column:ID}") String column) {
+			@Value("${partition.table:PEOPLE}") String table,
+			@Value("${partition.column:ID}") String column) {
 		return new IdRangePartitioner(jdbcTemplate, table, column);
 	}
 }

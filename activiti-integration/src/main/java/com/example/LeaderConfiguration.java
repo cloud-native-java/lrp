@@ -24,8 +24,7 @@ class LeaderConfiguration {
 			@Override
 			public void execute(ActivityExecution execution) throws Exception {
 
-				Message<?> executionMessage = MessageBuilder
-						.withPayload(execution.getId())
+				Message<?> executionMessage = MessageBuilder.withPayload(execution.getId())
 						.build();
 
 				channels.leaderRequests().send(executionMessage);
@@ -35,14 +34,11 @@ class LeaderConfiguration {
 
 	// <2>
 	@Bean
-	IntegrationFlow repliesFlow(LeaderChannels channels,
-	                            ProcessEngine engine) {
-		return IntegrationFlows
-				.from(channels.leaderReplies())
+	IntegrationFlow repliesFlow(LeaderChannels channels, ProcessEngine engine) {
+		return IntegrationFlows.from(channels.leaderReplies())
 				.handle(String.class, (executionId, map) -> {
 					engine.getRuntimeService().signal(executionId);
 					return null;
-				})
-				.get();
+				}).get();
 	}
 }
