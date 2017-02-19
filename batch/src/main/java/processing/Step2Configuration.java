@@ -18,37 +18,37 @@ import javax.sql.DataSource;
 @Configuration
 class Step2Configuration {
 
-	@Bean
-	@StepScope
-	// <1>
-	FlatFileItemReader<Person> fileReader(
-			@Value("file://#{jobParameters['input']}") Resource in) // <2>
-			throws Exception {
+ @Bean
+ @StepScope
+ // <1>
+ FlatFileItemReader<Person> fileReader(
+   @Value("file://#{jobParameters['input']}") Resource in) // <2>
+   throws Exception {
 
-		// <3>
-		return new FlatFileItemReaderBuilder<Person>().name("file-reader").resource(in)
-				.targetType(Person.class).delimited().delimiter(",")
-				.names(new String[] { "firstName", "age", "email" }).build();
-	}
+  // <3>
+  return new FlatFileItemReaderBuilder<Person>().name("file-reader").resource(in)
+    .targetType(Person.class).delimited().delimiter(",")
+    .names(new String[] { "firstName", "age", "email" }).build();
+ }
 
-	@Bean
-	ItemProcessor<Person, Person> emailValidatingProcessor(
-			EmailValidationService emailValidator) { // <4>
-		return item -> {
-			String email = item.getEmail();
-			if (!emailValidator.isEmailValid(email)) {
-				throw new InvalidEmailException(email);
-			}
-			return item;
-		};
-	}
+ @Bean
+ ItemProcessor<Person, Person> emailValidatingProcessor(
+   EmailValidationService emailValidator) { // <4>
+  return item -> {
+   String email = item.getEmail();
+   if (!emailValidator.isEmailValid(email)) {
+    throw new InvalidEmailException(email);
+   }
+   return item;
+  };
+ }
 
-	@Bean
-	JdbcBatchItemWriter<Person> jdbcWriter(DataSource ds) { // <5>
-		return new JdbcBatchItemWriterBuilder<Person>()
-				.dataSource(ds)
-				.sql(
-						"insert into PEOPLE( AGE, FIRST_NAME, EMAIL)"
-								+ " values (:age, :firstName, :email)").beanMapped().build();
-	}
+ @Bean
+ JdbcBatchItemWriter<Person> jdbcWriter(DataSource ds) { // <5>
+  return new JdbcBatchItemWriterBuilder<Person>()
+    .dataSource(ds)
+    .sql(
+      "insert into PEOPLE( AGE, FIRST_NAME, EMAIL)"
+        + " values (:age, :firstName, :email)").beanMapped().build();
+ }
 }

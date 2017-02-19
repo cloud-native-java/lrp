@@ -16,40 +16,40 @@ import org.springframework.context.annotation.Profile;
 @EnableAutoConfiguration
 public class DemoApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
-	}
+ public static void main(String[] args) {
+  SpringApplication.run(DemoApplication.class, args);
+ }
 
-	@Configuration
-	@Profile(Profiles.LEADER)
-	@EnableBinding(LeaderChannels.class)
-	public static class Leader {
+ @Configuration
+ @Profile(Profiles.LEADER)
+ @EnableBinding(LeaderChannels.class)
+ public static class Leader {
 
-		@Bean
-		InitializingBean init(IdentityService identityService) {
-			return () -> {
+  @Bean
+  InitializingBean init(IdentityService identityService) {
+   return () -> {
 
-				String usersGroup = "users";
-				if (0 == identityService.createGroupQuery().groupId(usersGroup).count()) {
-					Group group = identityService.newGroup(usersGroup);
-					group.setName(usersGroup);
-					group.setType("security-role");
-					identityService.saveGroup(group);
-				}
+    String usersGroup = "users";
+    if (0 == identityService.createGroupQuery().groupId(usersGroup).count()) {
+     Group group = identityService.newGroup(usersGroup);
+     group.setName(usersGroup);
+     group.setType("security-role");
+     identityService.saveGroup(group);
+    }
 
-				String adminUser = "operator";
-				if (0 == identityService.createUserQuery().userId(adminUser).count()) {
-					User admin = identityService.newUser(adminUser);
-					admin.setPassword(adminUser);
-					identityService.saveUser(admin);
-				}
-			};
-		}
-	}
+    String adminUser = "operator";
+    if (0 == identityService.createUserQuery().userId(adminUser).count()) {
+     User admin = identityService.newUser(adminUser);
+     admin.setPassword(adminUser);
+     identityService.saveUser(admin);
+    }
+   };
+  }
+ }
 
-	@Configuration
-	@Profile(Profiles.WORKER)
-	@EnableBinding(WorkerChannels.class)
-	public static class Worker {
-	}
+ @Configuration
+ @Profile(Profiles.WORKER)
+ @EnableBinding(WorkerChannels.class)
+ public static class Worker {
+ }
 }

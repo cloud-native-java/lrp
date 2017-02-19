@@ -17,20 +17,20 @@ import java.util.stream.Stream;
 @SpringBootApplication
 public class HelloTask {
 
-	private Log log = LogFactory.getLog(getClass());
+ private Log log = LogFactory.getLog(getClass());
 
-	public static void main(String args[]) {
-		SpringApplication.run(HelloTask.class, args);
-	}
+ public static void main(String args[]) {
+  SpringApplication.run(HelloTask.class, args);
+ }
 
-	@Bean
-	CommandLineRunner runAndExplore(TaskExplorer taskExplorer) {
-		return args -> {
-			Stream.of(args).forEach(log::info);
+ @Bean
+ CommandLineRunner runAndExplore(TaskExplorer taskExplorer) {
+  return args -> {
+   Stream.of(args).forEach(log::info);
 
-			// <2>
-			taskExplorer.findAll(new PageRequest(0, 1)).forEach(
-					taskExecution -> log.info(taskExecution.toString()));
-		};
-	}
+   // <2>
+   taskExplorer.findAll(new PageRequest(0, 1)).forEach(
+     taskExecution -> log.info(taskExecution.toString()));
+  };
+ }
 }

@@ -13,19 +13,19 @@ import org.springframework.integration.dsl.support.GenericHandler;
 @Profile(Profiles.WORKER)
 class WorkerConfiguration {
 
-	@Bean
-	IntegrationFlow requestsFlow(WorkerChannels channels) {
+ @Bean
+ IntegrationFlow requestsFlow(WorkerChannels channels) {
 
-		Log log = LogFactory.getLog(getClass());
+  Log log = LogFactory.getLog(getClass());
 
-		// <1>
-		return IntegrationFlows.from(channels.workerRequests())
-				.handle((GenericHandler<String>) (executionId, headers) -> {
-					// <2>
-						headers.entrySet().forEach(e -> log.info(e.getKey() + '=' + e.getValue()));
-						log.info("sending executionId (" + executionId + ") to workerReplies.");
-						return executionId;
-					}).channel(channels.workerReplies()) // <3>
-				.get();
-	}
+  // <1>
+  return IntegrationFlows.from(channels.workerRequests())
+    .handle((GenericHandler<String>) (executionId, headers) -> {
+     // <2>
+      headers.entrySet().forEach(e -> log.info(e.getKey() + '=' + e.getValue()));
+      log.info("sending executionId (" + executionId + ") to workerReplies.");
+      return executionId;
+     }).channel(channels.workerReplies()) // <3>
+    .get();
+ }
 }

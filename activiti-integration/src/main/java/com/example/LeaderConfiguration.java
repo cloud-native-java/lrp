@@ -16,29 +16,29 @@ import org.springframework.messaging.Message;
 @Profile(Profiles.LEADER)
 class LeaderConfiguration {
 
-	// <1>
-	@Bean
-	ActivityBehavior gateway(LeaderChannels channels) {
-		return new ReceiveTaskActivityBehavior() {
+ // <1>
+ @Bean
+ ActivityBehavior gateway(LeaderChannels channels) {
+  return new ReceiveTaskActivityBehavior() {
 
-			@Override
-			public void execute(ActivityExecution execution) throws Exception {
+   @Override
+   public void execute(ActivityExecution execution) throws Exception {
 
-				Message<?> executionMessage = MessageBuilder.withPayload(execution.getId())
-						.build();
+    Message<?> executionMessage = MessageBuilder.withPayload(execution.getId())
+      .build();
 
-				channels.leaderRequests().send(executionMessage);
-			}
-		};
-	}
+    channels.leaderRequests().send(executionMessage);
+   }
+  };
+ }
 
-	// <2>
-	@Bean
-	IntegrationFlow repliesFlow(LeaderChannels channels, ProcessEngine engine) {
-		return IntegrationFlows.from(channels.leaderReplies())
-				.handle(String.class, (executionId, map) -> {
-					engine.getRuntimeService().signal(executionId);
-					return null;
-				}).get();
-	}
+ // <2>
+ @Bean
+ IntegrationFlow repliesFlow(LeaderChannels channels, ProcessEngine engine) {
+  return IntegrationFlows.from(channels.leaderReplies())
+    .handle(String.class, (executionId, map) -> {
+     engine.getRuntimeService().signal(executionId);
+     return null;
+    }).get();
+ }
 }

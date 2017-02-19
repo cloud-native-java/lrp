@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 @Service
 class SendConfirmationEmail {
 
-	private Log log = LogFactory.getLog(getClass());
+ private Log log = LogFactory.getLog(getClass());
 
-	public void execute(ActivityExecution execution) throws Exception {
-		this.log.info("in " + getClass().getName() + ", customerId = "
-				+ execution.getVariable("customerId"));
-		// exercise to reader: send an email, perhaps
-		// using Sendgrid?
-	}
+ public void execute(ActivityExecution execution) throws Exception {
+  this.log.info("in " + getClass().getName() + ", customerId = "
+    + execution.getVariable("customerId"));
+  // exercise to reader: send an email, perhaps
+  // using Sendgrid?
+ }
 }

@@ -18,33 +18,33 @@ import org.springframework.messaging.MessageChannel;
 // <1>
 class WorkerConfiguration {
 
-	// <2>
-	@Bean
-	StepLocator stepLocator() {
-		return new BeanFactoryStepLocator();
-	}
+ // <2>
+ @Bean
+ StepLocator stepLocator() {
+  return new BeanFactoryStepLocator();
+ }
 
-	// <3>
-	@Bean
-	StepExecutionRequestHandler stepExecutionRequestHandler(JobExplorer explorer,
-			StepLocator stepLocator) {
-		StepExecutionRequestHandler handler = new StepExecutionRequestHandler();
-		handler.setStepLocator(stepLocator);
-		handler.setJobExplorer(explorer);
-		return handler;
-	}
+ // <3>
+ @Bean
+ StepExecutionRequestHandler stepExecutionRequestHandler(JobExplorer explorer,
+   StepLocator stepLocator) {
+  StepExecutionRequestHandler handler = new StepExecutionRequestHandler();
+  handler.setStepLocator(stepLocator);
+  handler.setJobExplorer(explorer);
+  return handler;
+ }
 
-	// <4>
-	@Bean
-	IntegrationFlow stepExecutionRequestHandlerFlow(WorkerChannels channels,
-			StepExecutionRequestHandler handler) {
+ // <4>
+ @Bean
+ IntegrationFlow stepExecutionRequestHandlerFlow(WorkerChannels channels,
+   StepExecutionRequestHandler handler) {
 
-		MessageChannel channel = channels.workerRequestsChannels();
-		GenericHandler<StepExecutionRequest> executionHandler = (payload, headers) -> handler
-				.handle(payload);
+  MessageChannel channel = channels.workerRequestsChannels();
+  GenericHandler<StepExecutionRequest> executionHandler = (payload, headers) -> handler
+    .handle(payload);
 
-		return IntegrationFlows.from(channel)
-				.handle(StepExecutionRequest.class, executionHandler)
-				.channel(channels.workerRepliesChannels()).get();
-	}
+  return IntegrationFlows.from(channel)
+    .handle(StepExecutionRequest.class, executionHandler)
+    .channel(channels.workerRepliesChannels()).get();
+ }
 }

@@ -14,17 +14,17 @@ import java.util.Map;
 @RestController
 class ProcessRestController {
 
-	private final ProcessEngine processEngine;
+ private final ProcessEngine processEngine;
 
-	@Autowired
-	ProcessRestController(ProcessEngine processEngine) {
-		this.processEngine = processEngine;
-	}
+ @Autowired
+ ProcessRestController(ProcessEngine processEngine) {
+  this.processEngine = processEngine;
+ }
 
-	@GetMapping("/start")
-	Map<String, String> launch() {
-		ProcessInstance pi = this.processEngine.getRuntimeService()
-				.startProcessInstanceByKey("asyncProcess");
-		return Collections.singletonMap("processInstanceId", pi.getProcessInstanceId());
-	}
+ @GetMapping("/start")
+ Map<String, String> launch() {
+  ProcessInstance pi = this.processEngine.getRuntimeService()
+    .startProcessInstanceByKey("asyncProcess");
+  return Collections.singletonMap("processInstanceId", pi.getProcessInstanceId());
+ }
 }

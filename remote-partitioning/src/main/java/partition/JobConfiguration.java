@@ -12,11 +12,11 @@ import org.springframework.context.annotation.Profile;
 // <1>
 class JobConfiguration {
 
-	@Bean
-	Job job(JobBuilderFactory jbf, LeaderStepConfiguration lsc) {
-		return jbf.get("job").incrementer(new RunIdIncrementer())
-				.start(lsc.stagingStep(null, null)) // <2>
-				.next(lsc.partitionStep(null, null, null, null)) // <3>
-				.build();
-	}
+ @Bean
+ Job job(JobBuilderFactory jbf, LeaderStepConfiguration lsc) {
+  return jbf.get("job").incrementer(new RunIdIncrementer())
+    .start(lsc.stagingStep(null, null)) // <2>
+    .next(lsc.partitionStep(null, null, null, null)) // <3>
+    .build();
+ }
 }

@@ -6,9 +6,9 @@ import org.springframework.messaging.MessageChannel;
 
 public interface WorkerChannels {
 
-	@Input
-	MessageChannel workerRequests();
+ @Input
+ MessageChannel workerRequests();
 
-	@Output
-	MessageChannel workerReplies();
+ @Output
+ MessageChannel workerReplies();
 }

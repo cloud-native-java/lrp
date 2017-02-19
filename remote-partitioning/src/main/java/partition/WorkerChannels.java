@@ -13,27 +13,27 @@ import org.springframework.messaging.MessageChannel;
 @Profile(Profiles.WORKER_PROFILE)
 class WorkerChannels {
 
-	private final Worker worker;
+ private final Worker worker;
 
-	@Autowired
-	public WorkerChannels(Worker worker) {
-		this.worker = worker;
-	}
+ @Autowired
+ public WorkerChannels(Worker worker) {
+  this.worker = worker;
+ }
 
-	MessageChannel workerRequestsChannels() {
-		return this.worker.workerRequests();
-	}
+ MessageChannel workerRequestsChannels() {
+  return this.worker.workerRequests();
+ }
 
-	MessageChannel workerRepliesChannels() {
-		return this.worker.workerReplies();
-	}
+ MessageChannel workerRepliesChannels() {
+  return this.worker.workerReplies();
+ }
 
-	public interface Worker {
+ public interface Worker {
 
-		@Input
-		MessageChannel workerRequests();
+  @Input
+  MessageChannel workerRequests();
 
-		@Output
-		MessageChannel workerReplies();
-	}
+  @Output
+  MessageChannel workerReplies();
+ }
 }

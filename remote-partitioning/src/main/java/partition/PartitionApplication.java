@@ -18,18 +18,18 @@ import java.util.concurrent.TimeUnit;
 @SpringBootApplication
 public class PartitionApplication {
 
-	public static void main(String args[]) {
-		SpringApplication.run(PartitionApplication.class, args);
-	}
+ public static void main(String args[]) {
+  SpringApplication.run(PartitionApplication.class, args);
+ }
 
-	// <2>
-	@Bean(name = PollerMetadata.DEFAULT_POLLER)
-	PollerMetadata defaultPoller() {
-		return Pollers.fixedRate(10, TimeUnit.SECONDS).get();
-	}
+ // <2>
+ @Bean(name = PollerMetadata.DEFAULT_POLLER)
+ PollerMetadata defaultPoller() {
+  return Pollers.fixedRate(10, TimeUnit.SECONDS).get();
+ }
 
-	@Bean
-	JdbcTemplate jdbcTemplate(DataSource dataSource) {
-		return new JdbcTemplate(dataSource);
-	}
+ @Bean
+ JdbcTemplate jdbcTemplate(DataSource dataSource) {
+  return new JdbcTemplate(dataSource);
+ }
 }

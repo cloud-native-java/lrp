@@ -30,102 +30,102 @@ import java.util.stream.Stream;
 @RunWith(SpringRunner.class)
 public class ActivitiIT {
 
-	private final RestTemplate restTemplate = new RestTemplateBuilder()
-			.basicAuthorization("operator", "operator")
-			.build();
+ private final RestTemplate restTemplate = new RestTemplateBuilder()
+   .basicAuthorization("operator", "operator")
+   .build();
 
-	@Autowired
-	private RetryTemplate retryTemplate;
+ @Autowired
+ private RetryTemplate retryTemplate;
 
-	@Autowired
-	private CloudFoundryService cloudFoundryService;
+ @Autowired
+ private CloudFoundryService cloudFoundryService;
 
-	private File leaderManifest, workerManifest;
+ private File leaderManifest, workerManifest;
 
-	private Log log = LogFactory.getLog(getClass());
+ private Log log = LogFactory.getLog(getClass());
 
-	@Before
-	public void before() throws Throwable {
+ @Before
+ public void before() throws Throwable {
 
-		// deploy the activiti application, twice, to CF as a leader and a worker node.
-		String mysql = "activiti-mysql", rmq = "activiti-rabbitmq",
-				leader = "activiti-leader", worker = "activiti-worker";
+  // deploy the activiti application, twice, to CF as a leader and a worker node.
+  String mysql = "activiti-mysql", rmq = "activiti-rabbitmq",
+    leader = "activiti-leader", worker = "activiti-worker";
 
-		File projectFolder = new File(new File("."), "../activiti-integration");
-		this.leaderManifest = new File(projectFolder, "manifest-leader.yml");
-		this.workerManifest = new File(projectFolder, "manifest-worker.yml");
+  File projectFolder = new File(new File("."), "../activiti-integration");
+  this.leaderManifest = new File(projectFolder, "manifest-leader.yml");
+  this.workerManifest = new File(projectFolder, "manifest-worker.yml");
 
-		log.debug("activiti folder: "
-				+ projectFolder.getAbsolutePath());
+  log.debug("activiti folder: "
+    + projectFolder.getAbsolutePath());
 
-		// reset
-		Runnable apps = () -> Stream.of(leader, worker)
-				.parallel().forEach(app -> this.cloudFoundryService.destroyApplicationIfExists(app));
+  // reset
+  Runnable apps = () -> Stream.of(leader, worker)
+    .parallel().forEach(app -> this.cloudFoundryService.destroyApplicationIfExists(app));
 
-		Runnable routes = () -> this.cloudFoundryService.destroyOrphanedRoutes();
+  Runnable routes = () -> this.cloudFoundryService.destroyOrphanedRoutes();
 
-		Runnable services = () -> Stream.of(mysql, rmq)
-				.parallel().forEach(svc -> this.cloudFoundryService.destroyServiceIfExists(svc));
+  Runnable services = () -> Stream.of(mysql, rmq)
+    .parallel().forEach(svc -> this.cloudFoundryService.destroyServiceIfExists(svc));
 
-		// apps must be reset first!
-		Stream.of(apps, routes, services).forEach(Runnable::run);
+  // apps must be reset first!
+  Stream.of(apps, routes, services).forEach(Runnable::run);
 
-		// create services required
-		Stream.of("p-mysql 100mb " + mysql, "cloudamqp lemur " + rmq)
-				.map(x -> x.split(" "))
-				.parallel()
-				.forEach(t -> this.cloudFoundryService.createService(t[0], t[1], t[2]));
+  // create services required
+  Stream.of("p-mysql 100mb " + mysql, "cloudamqp lemur " + rmq)
+    .map(x -> x.split(" "))
+    .parallel()
+    .forEach(t -> this.cloudFoundryService.createService(t[0], t[1], t[2]));
 
-		// deploy
-		Arrays.asList(leaderManifest, workerManifest)
-				.parallelStream()
-				.forEach(mf -> this.cloudFoundryService.pushApplicationUsingManifest(mf));
-	}
+  // deploy
+  Arrays.asList(leaderManifest, workerManifest)
+    .parallelStream()
+    .forEach(mf -> this.cloudFoundryService.pushApplicationUsingManifest(mf));
+ }
 
-	@After
-	public void after() throws Throwable {
-		Stream.of(this.leaderManifest, workerManifest)
-				.forEach(this.cloudFoundryService::destroyApplicationUsingManifest);
-	}
+ @After
+ public void after() throws Throwable {
+  Stream.of(this.leaderManifest, workerManifest)
+    .forEach(this.cloudFoundryService::destroyApplicationUsingManifest);
+ }
 
-	@Test
-	public void testDistributedWorkflows() throws Throwable {
+ @Test
+ public void testDistributedWorkflows() throws Throwable {
 
-		String url = this.cloudFoundryService
-				.urlForApplication("activiti-leader");
+  String url = this.cloudFoundryService
+    .urlForApplication("activiti-leader");
 
-		ResponseEntity<Map<String, String>> entity =
-				restTemplate.exchange(url + "/start",
-						HttpMethod.GET,
-						null,
-						new ParameterizedTypeReference<Map<String, String>>() {
-						});
-		Assert.assertEquals(entity.getStatusCode(), HttpStatus.OK);
-		String pid = entity.getBody().get("processInstanceId");
-		log.info("process instance ID: " + pid);
+  ResponseEntity<Map<String, String>> entity =
+    restTemplate.exchange(url + "/start",
+      HttpMethod.GET,
+      null,
+      new ParameterizedTypeReference<Map<String, String>>() {
+      });
+  Assert.assertEquals(entity.getStatusCode(), HttpStatus.OK);
+  String pid = entity.getBody().get("processInstanceId");
+  log.info("process instance ID: " + pid);
 
-		RetryCallback<Boolean, RuntimeException> rt = retryContext -> {
-			String pidUrl = url + "/history/historic-process-instances/" + pid;
-			log.info("calling the " + url + " endpoint to confirm the process ran and completed successfully.");
-			Map<String, Object> instanceInformation = restTemplate.exchange(
-					pidUrl, HttpMethod.GET, null,
-					new ParameterizedTypeReference<Map<String, Object>>() {
-					})
-					.getBody();
+  RetryCallback<Boolean, RuntimeException> rt = retryContext -> {
+   String pidUrl = url + "/history/historic-process-instances/" + pid;
+   log.info("calling the " + url + " endpoint to confirm the process ran and completed successfully.");
+   Map<String, Object> instanceInformation = restTemplate.exchange(
+     pidUrl, HttpMethod.GET, null,
+     new ParameterizedTypeReference<Map<String, Object>>() {
+     })
+     .getBody();
 
-			if (instanceInformation.get("endTime") != null) {
-				log.info("endTime was not null..");
-				return true;
-			}
-			log.info("endTime was null..");
-			throw new RuntimeException("the endTime attribute was null");
-		};
-		Boolean endTimeNull = retryTemplate.execute(rt, retryContext -> false);
-		Assert.assertTrue("the endTime attribute should eventually return null",
-				endTimeNull);
-	}
+   if (instanceInformation.get("endTime") != null) {
+    log.info("endTime was not null..");
+    return true;
+   }
+   log.info("endTime was null..");
+   throw new RuntimeException("the endTime attribute was null");
+  };
+  Boolean endTimeNull = retryTemplate.execute(rt, retryContext -> false);
+  Assert.assertTrue("the endTime attribute should eventually return null",
+    endTimeNull);
+ }
 
-	@SpringBootApplication
-	public static class Config {
-	}
+ @SpringBootApplication
+ public static class Config {
+ }
 }

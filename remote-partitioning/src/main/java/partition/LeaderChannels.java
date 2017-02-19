@@ -13,25 +13,25 @@ import org.springframework.messaging.MessageChannel;
 @EnableBinding(LeaderChannels.Leader.class)
 class LeaderChannels {
 
-	private final Leader leader;
+ private final Leader leader;
 
-	@Autowired
-	public LeaderChannels(Leader leader) {
-		this.leader = leader;
-	}
+ @Autowired
+ public LeaderChannels(Leader leader) {
+  this.leader = leader;
+ }
 
-	@Bean
-	public QueueChannel leaderRepliesAggregatedChannel() {
-		return MessageChannels.queue().get();
-	}
+ @Bean
+ public QueueChannel leaderRepliesAggregatedChannel() {
+  return MessageChannels.queue().get();
+ }
 
-	public MessageChannel leaderRequestsChannel() {
-		return leader.leaderRequests();
-	}
+ public MessageChannel leaderRequestsChannel() {
+  return leader.leaderRequests();
+ }
 
-	public interface Leader {
+ public interface Leader {
 
-		@Output
-		MessageChannel leaderRequests();
-	}
+  @Output
+  MessageChannel leaderRequests();
+ }
 }

@@ -22,32 +22,32 @@ import java.util.Map;
 @Profile(Profiles.LEADER_PROFILE)
 class PartitionRestController {
 
-	private final Job job;
-	private final JobLauncher jobLauncher;
-	private final JdbcOperations jdbcOperations;
+ private final Job job;
+ private final JobLauncher jobLauncher;
+ private final JdbcOperations jdbcOperations;
 
-	@Autowired
-	public PartitionRestController(JdbcOperations jdbcOperations,
-			JobConfiguration jobConfiguration, JobLauncher jobLauncher) throws Exception {
-		this.jobLauncher = jobLauncher;
-		this.jdbcOperations = jdbcOperations;
-		this.job = jobConfiguration.job(null, null);
-	}
+ @Autowired
+ public PartitionRestController(JdbcOperations jdbcOperations,
+   JobConfiguration jobConfiguration, JobLauncher jobLauncher) throws Exception {
+  this.jobLauncher = jobLauncher;
+  this.jdbcOperations = jdbcOperations;
+  this.job = jobConfiguration.job(null, null);
+ }
 
-	@RequestMapping(value = "/migrate", method = { RequestMethod.POST, RequestMethod.GET })
-	ResponseEntity<?> start() throws JobExecutionException {
-		JobExecution execution = this.jobLauncher.run(this.job, new JobParametersBuilder()
-				.addDate("date", new Date()).toJobParameters());
-		return ResponseEntity.ok(execution.getExitStatus());
-	}
+ @RequestMapping(value = "/migrate", method = { RequestMethod.POST, RequestMethod.GET })
+ ResponseEntity<?> start() throws JobExecutionException {
+  JobExecution execution = this.jobLauncher.run(this.job, new JobParametersBuilder()
+    .addDate("date", new Date()).toJobParameters());
+  return ResponseEntity.ok(execution.getExitStatus());
+ }
 
-	@GetMapping("/status")
-	ResponseEntity<?> status() {
-		Map<String, Number> status = new HashMap<>();
-		status.put("people.count",
-				this.jdbcOperations.queryForObject("select count(*) from PEOPLE", Number.class));
-		status.put("new_people.count", this.jdbcOperations.queryForObject(
-				"select count(*) from NEW_PEOPLE", Number.class));
-		return ResponseEntity.ok(status);
-	}
+ @GetMapping("/status")
+ ResponseEntity<?> status() {
+  Map<String, Number> status = new HashMap<>();
+  status.put("people.count",
+    this.jdbcOperations.queryForObject("select count(*) from PEOPLE", Number.class));
+  status.put("new_people.count", this.jdbcOperations.queryForObject(
+    "select count(*) from NEW_PEOPLE", Number.class));
+  return ResponseEntity.ok(status);
+ }
 }

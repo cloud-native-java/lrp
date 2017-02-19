@@ -6,9 +6,9 @@ import org.springframework.messaging.MessageChannel;
 
 public interface LeaderChannels {
 
-	@Output
-	MessageChannel leaderRequests();
+ @Output
+ MessageChannel leaderRequests();
 
-	@Input
-	MessageChannel leaderReplies();
+ @Input
+ MessageChannel leaderReplies();
 }

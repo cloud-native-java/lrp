@@ -12,12 +12,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringBootTest(classes = DemoApplication.class)
 public class EmailValidationServiceTest {
 
-	@Autowired
-	private EmailValidationService emailValidationService;
+ @Autowired
+ private EmailValidationService emailValidationService;
 
-	@Test
-	public void testEmailValidation() throws Exception {
-		Assert.assertTrue(this.emailValidationService.isEmailValid("george@email.com"));
-		Assert.assertFalse(this.emailValidationService.isEmailValid("george"));
-	}
+ @Test
+ public void testEmailValidation() throws Exception {
+  Assert.assertTrue(this.emailValidationService.isEmailValid("george@email.com"));
+  Assert.assertFalse(this.emailValidationService.isEmailValid("george"));
+ }
 }
