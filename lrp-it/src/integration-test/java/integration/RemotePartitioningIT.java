@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
@@ -23,12 +24,7 @@ import java.util.stream.Stream;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.http.HttpMethod.GET;
 
-/**
- * @author <a
- * href="mailto:josh@joshlong.com">Josh
- * Long</a>
- */
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
 @SpringBootTest(classes = RemotePartitioningIT.Config.class)
 public class RemotePartitioningIT {
 
