@@ -30,7 +30,7 @@ public class HelloTask {
 
    // <2>
    taskExplorer.findAll(new PageRequest(0, 1)).forEach(
-     taskExecution -> log.info(taskExecution.toString()));
+    taskExecution -> log.info(taskExecution.toString()));
   };
  }
 }

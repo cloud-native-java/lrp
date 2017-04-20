@@ -26,12 +26,12 @@ class WorkerStepConfiguration {
  @Bean
  @StepScope
  JdbcPagingItemReader<Person> reader(DataSource dataSource,
-   @Value("#{stepExecutionContext['minValue']}") Long min,
-   @Value("#{stepExecutionContext['maxValue']}") Long max) {
+  @Value("#{stepExecutionContext['minValue']}") Long min,
+  @Value("#{stepExecutionContext['maxValue']}") Long max) {
 
   MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
   queryProvider
-    .setSelectClause("id as id, email as email, age as age, first_name as firstName");
+   .setSelectClause("id as id, email as email, age as age, first_name as firstName");
   queryProvider.setFromClause("from PEOPLE");
   queryProvider.setWhereClause("where id >= " + min + " and id <= " + max);
   queryProvider.setSortKeys(Collections.singletonMap("id", Order.ASCENDING));
@@ -40,8 +40,8 @@ class WorkerStepConfiguration {
   reader.setDataSource(dataSource);
   reader.setFetchSize(this.chunk);
   reader.setQueryProvider(queryProvider);
-  reader.setRowMapper((rs, i) -> new Person(rs.getInt("id"), rs.getInt("age"), rs
-    .getString("firstName"), rs.getString("email")));
+  reader.setRowMapper((rs, i) -> new Person(rs.getInt("id"), rs.getInt("age"),
+   rs.getString("firstName"), rs.getString("email")));
   return reader;
  }
 
@@ -49,17 +49,17 @@ class WorkerStepConfiguration {
  @Bean
  JdbcBatchItemWriter<Person> writer(DataSource ds) {
   return new JdbcBatchItemWriterBuilder<Person>()
-    .beanMapped()
-    .dataSource(ds)
-    .sql(
-      "INSERT INTO NEW_PEOPLE(age,first_name,email) VALUES(:age, :firstName, :email )")
-    .build();
+   .beanMapped()
+   .dataSource(ds)
+   .sql(
+    "INSERT INTO NEW_PEOPLE(age,first_name,email) VALUES(:age, :firstName, :email )")
+   .build();
  }
 
  // <4>
  @Bean
  Step workerStep(StepBuilderFactory sbf) {
   return sbf.get("workerStep").<Person, Person>chunk(this.chunk)
-    .reader(reader(null, null, null)).writer(writer(null)).build();
+   .reader(reader(null, null, null)).writer(writer(null)).build();
  }
 }

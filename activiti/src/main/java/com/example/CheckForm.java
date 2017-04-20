@@ -15,12 +15,14 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 class CheckForm {
 
  private final RuntimeService runtimeService; // <1>
+
  private final CustomerRepository customerRepository;
+
  private final EmailValidationService emailValidationService;
 
  @Autowired
  public CheckForm(EmailValidationService emailValidationService,
-   RuntimeService runtimeService, CustomerRepository customerRepository) {
+  RuntimeService runtimeService, CustomerRepository customerRepository) {
   this.runtimeService = runtimeService;
   this.customerRepository = customerRepository;
   this.emailValidationService = emailValidationService;
@@ -30,13 +32,13 @@ class CheckForm {
  public void execute(ActivityExecution e) throws Exception {
   Long customerId = Long.parseLong(e.getVariable("customerId", String.class));
   Map<String, Object> vars = Collections.singletonMap("formOK",
-    validated(this.customerRepository.findOne(customerId)));
+   validated(this.customerRepository.findOne(customerId)));
   this.runtimeService.setVariables(e.getId(), vars); // <3>
  }
 
  private boolean validated(Customer customer) {
   return !isEmpty(customer.getFirstName()) && !isEmpty(customer.getLastName())
-    && this.emailValidationService.isEmailValid(customer.getEmail());
+   && this.emailValidationService.isEmailValid(customer.getEmail());
  }
 
 }

@@ -1,7 +1,9 @@
 package processing;
 
 public class Person {
+
  private int age;
+
  private String firstName, email;
 
  public Person() {

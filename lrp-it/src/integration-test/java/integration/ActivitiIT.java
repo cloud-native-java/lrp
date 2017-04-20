@@ -32,8 +32,7 @@ import java.util.stream.Stream;
 public class ActivitiIT {
 
  private final RestTemplate restTemplate = new RestTemplateBuilder()
-   .basicAuthorization("operator", "operator")
-   .build();
+  .basicAuthorization("operator", "operator").build();
 
  @Autowired
  private RetryTemplate retryTemplate;
@@ -45,74 +44,74 @@ public class ActivitiIT {
 
  private Log log = LogFactory.getLog(getClass());
 
- @Before
- public void before() throws Throwable {
-
-  // deploy the activiti application, twice, to CF as a leader and a worker node.
-  String mysql = "activiti-mysql", rmq = "activiti-rabbitmq",
-    leader = "activiti-leader", worker = "activiti-worker";
-
-  File projectFolder = new File(new File("."), "../activiti-integration");
-  this.leaderManifest = new File(projectFolder, "manifest-leader.yml");
-  this.workerManifest = new File(projectFolder, "manifest-worker.yml");
-
-  log.debug("activiti folder: "
-    + projectFolder.getAbsolutePath());
-
+ private void reset(String mysql, String rmq) {
   // reset
-  Runnable apps = () -> Stream.of(leader, worker)
-    .parallel().forEach(app -> this.cloudFoundryService.destroyApplicationIfExists(app));
+  Runnable apps = () -> Stream.of("activiti-leader", "activiti-worker")
+   .parallel()
+   .forEach(app -> this.cloudFoundryService.destroyApplicationIfExists(app));
 
   Runnable routes = () -> this.cloudFoundryService.destroyOrphanedRoutes();
 
-  Runnable services = () -> Stream.of(mysql, rmq)
-    .parallel().forEach(svc -> this.cloudFoundryService.destroyServiceIfExists(svc));
+  Runnable services = () -> Stream.of(mysql, rmq).parallel()
+   .forEach(svc -> this.cloudFoundryService.destroyServiceIfExists(svc));
 
   // apps must be reset first!
   Stream.of(apps, routes, services).forEach(Runnable::run);
+ }
+
+ @Before
+ public void before() throws Throwable {
+
+  // deploy the activiti application,
+  // twice, to CF as a leader and a
+  // worker node.
+  String mysql = "activiti-mysql", rmq = "activiti-rabbitmq";
+
+  File projectFolder = new File(new File("."), "../activiti-integration");
+  log.info("activiti folder: " + projectFolder.getAbsolutePath());
+
+  this.leaderManifest = new File(projectFolder, "manifest-leader.yml");
+  this.workerManifest = new File(projectFolder, "manifest-worker.yml");
+
+  this.reset(mysql, rmq);
 
   // create services required
   Stream.of("p-mysql 100mb " + mysql, "cloudamqp lemur " + rmq)
-    .map(x -> x.split(" "))
-    .parallel()
-    .forEach(t -> this.cloudFoundryService.createService(t[0], t[1], t[2]));
+   .map(x -> x.split(" ")).parallel()
+   .forEach(t -> this.cloudFoundryService.createService(t[0], t[1], t[2]));
 
   // deploy
-  Arrays.asList(leaderManifest, workerManifest)
-    .parallelStream()
-    .forEach(mf -> this.cloudFoundryService.pushApplicationUsingManifest(mf));
+  Arrays.asList(leaderManifest, workerManifest).parallelStream()
+   .forEach(mf -> this.cloudFoundryService.pushApplicationUsingManifest(mf));
  }
 
  @After
  public void after() throws Throwable {
-  Stream.of(this.leaderManifest, workerManifest)
-    .forEach(this.cloudFoundryService::destroyApplicationUsingManifest);
+  Stream.of(this.leaderManifest, workerManifest).forEach(
+   this.cloudFoundryService::destroyApplicationUsingManifest);
  }
 
  @Test
  public void testDistributedWorkflows() throws Throwable {
 
-  String url = this.cloudFoundryService
-    .urlForApplication("activiti-leader");
+  String url = this.cloudFoundryService.urlForApplication("activiti-leader");
 
-  ResponseEntity<Map<String, String>> entity =
-    restTemplate.exchange(url + "/start",
-      HttpMethod.GET,
-      null,
-      new ParameterizedTypeReference<Map<String, String>>() {
-      });
+  ResponseEntity<Map<String, String>> entity = restTemplate.exchange(url
+   + "/start", HttpMethod.GET, null,
+   new ParameterizedTypeReference<Map<String, String>>() {
+   });
   Assert.assertEquals(entity.getStatusCode(), HttpStatus.OK);
   String pid = entity.getBody().get("processInstanceId");
   log.info("process instance ID: " + pid);
 
   RetryCallback<Boolean, RuntimeException> rt = retryContext -> {
    String pidUrl = url + "/history/historic-process-instances/" + pid;
-   log.info("calling the " + url + " endpoint to confirm the process ran and completed successfully.");
-   Map<String, Object> instanceInformation = restTemplate.exchange(
-     pidUrl, HttpMethod.GET, null,
-     new ParameterizedTypeReference<Map<String, Object>>() {
-     })
-     .getBody();
+   log.info("calling the " + url
+    + " endpoint to confirm the process ran and completed successfully.");
+   Map<String, Object> instanceInformation = restTemplate.exchange(pidUrl,
+    HttpMethod.GET, null,
+    new ParameterizedTypeReference<Map<String, Object>>() {
+    }).getBody();
 
    if (instanceInformation.get("endTime") != null) {
     log.info("endTime was not null..");
@@ -123,14 +122,14 @@ public class ActivitiIT {
   };
   Boolean endTimeNull = retryTemplate.execute(rt, retryContext -> false);
   Assert.assertTrue("the endTime attribute should eventually return null",
-    endTimeNull);
+   endTimeNull);
  }
 
  @SpringBootApplication
  public static class Config {
 
   @Bean
-  RetryTemplate retryTemplate (){
+  RetryTemplate retryTemplate() {
    return new RetryTemplate();
   }
  }

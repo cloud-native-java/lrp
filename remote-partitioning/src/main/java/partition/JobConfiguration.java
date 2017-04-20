@@ -15,8 +15,8 @@ class JobConfiguration {
  @Bean
  Job job(JobBuilderFactory jbf, LeaderStepConfiguration lsc) {
   return jbf.get("job").incrementer(new RunIdIncrementer())
-    .start(lsc.stagingStep(null, null)) // <2>
-    .next(lsc.partitionStep(null, null, null, null)) // <3>
-    .build();
+   .start(lsc.stagingStep(null, null)) // <2>
+   .next(lsc.partitionStep(null, null, null, null)) // <3>
+   .build();
  }
 }

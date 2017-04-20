@@ -22,18 +22,18 @@ class Step2Configuration {
  @StepScope
  // <1>
  FlatFileItemReader<Person> fileReader(
-   @Value("file://#{jobParameters['input']}") Resource in) // <2>
-   throws Exception {
+  @Value("file://#{jobParameters['input']}") Resource in) // <2>
+  throws Exception {
 
   // <3>
-  return new FlatFileItemReaderBuilder<Person>().name("file-reader").resource(in)
-    .targetType(Person.class).delimited().delimiter(",")
-    .names(new String[] { "firstName", "age", "email" }).build();
+  return new FlatFileItemReaderBuilder<Person>().name("file-reader")
+   .resource(in).targetType(Person.class).delimited().delimiter(",")
+   .names(new String[] { "firstName", "age", "email" }).build();
  }
 
  @Bean
  ItemProcessor<Person, Person> emailValidatingProcessor(
-   EmailValidationService emailValidator) { // <4>
+  EmailValidationService emailValidator) { // <4>
   return item -> {
    String email = item.getEmail();
    if (!emailValidator.isEmailValid(email)) {
@@ -46,9 +46,9 @@ class Step2Configuration {
  @Bean
  JdbcBatchItemWriter<Person> jdbcWriter(DataSource ds) { // <5>
   return new JdbcBatchItemWriterBuilder<Person>()
-    .dataSource(ds)
-    .sql(
-      "insert into PEOPLE( AGE, FIRST_NAME, EMAIL)"
-        + " values (:age, :firstName, :email)").beanMapped().build();
+   .dataSource(ds)
+   .sql(
+    "insert into PEOPLE( AGE, FIRST_NAME, EMAIL)"
+     + " values (:age, :firstName, :email)").beanMapped().build();
  }
 }

@@ -20,12 +20,12 @@ class WorkerConfiguration {
 
   // <1>
   return IntegrationFlows.from(channels.workerRequests())
-    .handle((GenericHandler<String>) (executionId, headers) -> {
-     // <2>
-      headers.entrySet().forEach(e -> log.info(e.getKey() + '=' + e.getValue()));
-      log.info("sending executionId (" + executionId + ") to workerReplies.");
-      return executionId;
-     }).channel(channels.workerReplies()) // <3>
-    .get();
+   .handle((GenericHandler<String>) (executionId, headers) -> {
+    // <2>
+    headers.entrySet().forEach(e -> log.info(e.getKey() + '=' + e.getValue()));
+    log.info("sending executionId (" + executionId + ") to workerReplies.");
+    return executionId;
+   }).channel(channels.workerReplies()) // <3>
+   .get();
  }
 }
