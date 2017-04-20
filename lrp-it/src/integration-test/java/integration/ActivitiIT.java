@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -127,5 +128,10 @@ public class ActivitiIT {
 
  @SpringBootApplication
  public static class Config {
+  
+  @Bean
+  RetryTemplate retryTemplate (){
+   return new RetryTemplate();
+  }
  }
 }
