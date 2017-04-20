@@ -128,7 +128,7 @@ public class ActivitiIT {
 
  @SpringBootApplication
  public static class Config {
-  
+
   @Bean
   RetryTemplate retryTemplate (){
    return new RetryTemplate();
