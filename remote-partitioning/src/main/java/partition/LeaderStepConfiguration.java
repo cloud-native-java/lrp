@@ -40,12 +40,12 @@ class LeaderStepConfiguration {
  MessageChannelPartitionHandler partitionHandler(
   @Value("${partition.grid-size:4}") int gridSize,
   MessagingTemplate messagingTemplate, JobExplorer jobExplorer) {
-  MessageChannelPartitionHandler partitionHandler = new MessageChannelPartitionHandler();
-  partitionHandler.setMessagingOperations(messagingTemplate);
-  partitionHandler.setJobExplorer(jobExplorer);
-  partitionHandler.setStepName("workerStep");
-  partitionHandler.setGridSize(gridSize);
-  return partitionHandler;
+  MessageChannelPartitionHandler ph = new MessageChannelPartitionHandler();
+  ph.setMessagingOperations(messagingTemplate);
+  ph.setJobExplorer(jobExplorer);
+  ph.setStepName("workerStep");
+  ph.setGridSize(gridSize);
+  return ph;
  }
 
  // <4>

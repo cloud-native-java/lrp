@@ -36,10 +36,9 @@ class Step3Configuration {
  FlatFileItemWriter<Map<Integer, Integer>> fileWriter(
   @Value("file://#{jobParameters['output']}") Resource out) {
 
-  DelimitedLineAggregator<Map<Integer, Integer>> aggregator = new DelimitedLineAggregator<Map<Integer, Integer>>() {
-
+  DelimitedLineAggregator<Map<Integer, Integer>> aggregator =
+    new DelimitedLineAggregator<Map<Integer, Integer>>() {
    {
-    // <3>
     setDelimiter(",");
     setFieldExtractor(ageAndCount -> {
      Map.Entry<Integer, Integer> next = ageAndCount.entrySet().iterator()
