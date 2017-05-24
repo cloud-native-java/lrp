@@ -35,7 +35,7 @@ class Step3Configuration {
  @StepScope
  FlatFileItemWriter<Map<Integer, Integer>> fileWriter(
   @Value("file://#{jobParameters['output']}") Resource out) {
-
+  //@formatter:off
   DelimitedLineAggregator<Map<Integer, Integer>> aggregator =
     new DelimitedLineAggregator<Map<Integer, Integer>>() {
    {
@@ -47,6 +47,7 @@ class Step3Configuration {
     });
    }
   };
+  //@formatter:on
 
   return new FlatFileItemWriterBuilder<Map<Integer, Integer>>()
    .name("file-writer").resource(out).lineAggregator(aggregator).build();

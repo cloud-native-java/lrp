@@ -17,7 +17,7 @@
 
         <!--3-->
         <serviceTask id="check-form" name="check-form"
-                     activiti:expression="#{checkForm.execute(execution)}"/>
+             activiti:expression="#{checkForm.execute(execution)}"/>
 
         <sequenceFlow sourceRef="check-form"
           targetRef="form-completed-decision-gateway"/>
