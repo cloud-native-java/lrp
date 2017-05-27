@@ -41,11 +41,11 @@ class WorkerConfiguration {
 
   MessageChannel channel = channels.workerRequestsChannels();
   //@formatter:off
-  GenericHandler<StepExecutionRequest> executionHandler =
+  GenericHandler<StepExecutionRequest> handler =
           (payload, headers) -> handler.handle(payload);
   //@formatter:on
   return IntegrationFlows.from(channel)
-   .handle(StepExecutionRequest.class, executionHandler)
+   .handle(StepExecutionRequest.class, handler)
    .channel(channels.workerRepliesChannels()).get();
  }
 }

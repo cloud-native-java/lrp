@@ -12,8 +12,8 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.stream.Stream;
 
-@EnableTask
 // <1>
+@EnableTask
 @SpringBootApplication
 public class HelloTask {
 
